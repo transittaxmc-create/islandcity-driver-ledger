@@ -1,18 +1,21 @@
 # IslandCity Driver Ledger
 
-Aplicacion web movil, sin backend, para registrar viajes, turnos, peajes y ganancias en segundos.
+Aplicación móvil estática para registrar turnos y viajes desde el teléfono.
 
-## Funciones
+## Páginas activas
 
-- Registro rapido de viaje: tarifa, propina, efectivo, extra, millas, comision, peaje pagado y reembolsado.
-- Selector visual de plataformas: Uber, Lyft, Empower, Gallant, Aventus Ride, Classic Ryde, Aki Technology, EcoRide, Island City Transit, Transit Tax, Throo, Brakha Group, Street Hail y Other.
-- Turno: iniciar, pausar (break) y finalizar, con calculo de horas activas y $/hora en vivo.
-- GPS en vivo con geocerca de peajes 2026 (MTA $7.46, Port Authority peak $16.79 / off-peak $14.79) y deteccion de cercania a aeropuertos (JFK, LGA, EWR, ISP).
-- Bitacora diaria con edicion, borrado y totales de bruto, neto y peajes.
-- Meta diaria de $500 con barra de progreso.
-- Exportacion de respaldo en JSON.
-- Todo el almacenamiento es local (localStorage); no requiere servidor ni cuentas.
+- **Dashboard:** reloj y fecha automáticos, clock-in, break/resume, clock-out, estado GPS, bruto/neto, $/hora, objetivo diario y resumen semanal.
+- **Daily Entry:** captura rápida de plataforma, ingresos, millas, comisión, ubicaciones, notas y peajes.
+- **Register:** bitácora diaria, desglose de peajes por viaje y referencia de tarifas.
 
-## Uso local
+## GPS y peajes
 
-Abre `index.html` en un navegador movil o de escritorio. No requiere instalacion ni build.
+- El GPS se inicia al hacer clock-in y se detiene al hacer clock-out.
+- La detección usa geocercas de 350 m y evita duplicar una plaza mientras el vehículo permanece en su área.
+- Varios peajes detectados en un viaje se suman automáticamente y se almacenan con hora, importe, coordenadas y fuente.
+- Las notas se completan con el desglose y la fuente: `GPS geofence / tarifas E-ZPass 2026`.
+- Incluye tarifas E-ZPass de pasajeros MTA y Port Authority 2026; Port Authority cambia entre hora pico/fuera de pico.
+
+Todos los datos se guardan localmente en el navegador y pueden exportarse como respaldo JSON.
+
+GitHub Pages puede publicar el sitio desde `main` y la carpeta raíz.
