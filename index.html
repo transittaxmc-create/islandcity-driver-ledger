@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <title>IslandCity Driver Ledger</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header>
+      <p class="eyebrow">IslandCity</p>
+      <h1>Driver Ledger</h1>
+      <p class="subtle">Track daily driving income, miles, tolls, and shifts.</p>
+    </header>
+
+    <section class="card shift">
+      <div>
+        <p class="eyebrow">Shift</p>
+        <strong id="shiftStatus">Off duty</strong>
+      </div>
+      <div class="shift-actions">
+        <button id="startShift" class="primary">Clock in</button>
+        <button id="endShift" class="secondary" disabled>Clock out</button>
+      </div>
+      <p id="shiftTime" class="subtle">No active shift</p>
+    </section>
+
+    <section class="totals" aria-label="Today's totals">
+      <article class="card"><span>Gross</span><strong id="grossTotal">$0.00</strong></article>
+      <article class="card"><span>Net</span><strong id="netTotal">$0.00</strong></article>
+      <article class="card"><span>Miles</span><strong id="milesTotal">0.0</strong></article>
+      <article class="card"><span>Trips</span><strong id="tripTotal">0</strong></article>
+    </section>
+
+    <section class="card">
+      <div class="section-heading">
+        <div><p class="eyebrow">Daily entry</p><h2>Add a trip</h2></div>
+        <button id="locationButton" class="secondary" type="button">Use location</button>
+      </div>
+      <form id="tripForm">
+        <div class="grid">
+          <label>Platform<select id="platform"><option>Uber</option><option>Lyft</option><option>Taxi</option><option>Delivery</option><option>Cash</option><option>Other</option></select></label>
+          <label>Date<input id="date" type="date" required></label>
+          <label>Fare<input id="fare" type="number" min="0" step="0.01" value="0" required></label>
+          <label>Tips<input id="tips" type="number" min="0" step="0.01" value="0"></label>
+          <label>Cash<input id="cash" type="number" min="0" step="0.01" value="0"></label>
+          <label>Extra<input id="extra" type="number" min="0" step="0.01" value="0"></label>
+          <label>Miles<input id="miles" type="number" min="0" step="0.1" value="0"></label>
+          <label>Toll paid<input id="toll" type="number" min="0" step="0.01" value="0"></label>
+          <label>Toll reimbursed<input id="reimbursed" type="number" min="0" step="0.01" value="0"></label>
+        </div>
+        <input id="location" type="hidden">
+        <button class="primary full" type="submit">Save trip</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <div class="section-heading"><div><p class="eyebrow">Ledger</p><h2>Today’s trips</h2></div><button id="clearToday" class="danger" type="button">Clear today</button></div>
+      <div id="tripList" class="trip-list"><p class="empty">No trips recorded today.</p></div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
