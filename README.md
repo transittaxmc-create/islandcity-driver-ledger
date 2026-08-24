@@ -1,15 +1,18 @@
 # IslandCity Driver Ledger
 
-A dependency-free, mobile-first static web app for recording daily driver trips, earnings, tolls, mileage, and shift status.
+Aplicacion web movil, sin backend, para registrar viajes, turnos, peajes y ganancias en segundos.
 
-## Run locally
+## Funciones
 
-Open `index.html` in a modern browser. Data is stored locally in the browser using `localStorage`.
+- Registro rapido de viaje: tarifa, propina, efectivo, extra, millas, comision, peaje pagado y reembolsado.
+- Selector visual de plataformas: Uber, Lyft, Empower, Gallant, Aventus Ride, Classic Ryde, Aki Technology, EcoRide, Island City Transit, Transit Tax, Throo, Brakha Group, Street Hail y Other.
+- Turno: iniciar, pausar (break) y finalizar, con calculo de horas activas y $/hora en vivo.
+- GPS en vivo con geocerca de peajes 2026 (MTA $7.46, Port Authority peak $16.79 / off-peak $14.79) y deteccion de cercania a aeropuertos (JFK, LGA, EWR, ISP).
+- Bitacora diaria con edicion, borrado y totales de bruto, neto y peajes.
+- Meta diaria de $500 con barra de progreso.
+- Exportacion de respaldo en JSON.
+- Todo el almacenamiento es local (localStorage); no requiere servidor ni cuentas.
 
-## Features
+## Uso local
 
-- Daily trip entries with platforms, fare, tips, cash, extras, miles, toll payments and reimbursements
-- Gross and net totals, trip count, and mileage for the current day
-- Shift clock-in / clock-out state
-- Optional browser GPS location capture
-- No backend, build process, or dependencies
+Abre `index.html` en un navegador movil o de escritorio. No requiere instalacion ni build.
