@@ -1,12 +1,100 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#090909">
-<title>IslandCity Driver Ledger</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#060606" />
+  <title>IslandCity Transit Services</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
-<main class="app"><header class="topbar"><div class="brand"><svg viewBox="0 0 48 48" class="logo" aria-hidden="true"><path d="M4 35 Q12 31 24 33 Q36 35 44 31" stroke="url(#lg)" stroke-width="1.4" stroke-linecap="round" fill="none" opacity=".7"/><rect x="8" y="18" width="2" height="14" fill="url(#lg)" rx=".5"/><rect x="22" y="20" width="2" height="12" fill="url(#lg)" rx=".5"/><path d="M4 30 H26 M9 18 L4 30 M9 18 L14 30 M9 18 L19 30 M23 20 L14 30 M23 20 L26 30" stroke="url(#lg)" stroke-width="1" stroke-linecap="round"/><rect x="28" y="26" width="3" height="6" fill="url(#lg)" rx=".3"/><rect x="32" y="22" width="3" height="10" fill="url(#lg)" rx=".3"/><rect x="36" y="18" width="3" height="14" fill="url(#lg)" rx=".3"/><rect x="37" y="14" width="1.2" height="5" fill="url(#lg)" rx=".3"/><rect x="40" y="24" width="3" height="8" fill="url(#lg)" rx=".3"/><defs><linearGradient id="lg" x1="4" y1="14" x2="44" y2="38" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#f6dd8c"/><stop offset="1" stop-color="#b8860b"/></linearGradient></defs></svg><div><p class="eyebrow">IslandCity</p><h1>Driver Ledger</h1></div></div><span id="shiftBadge" class="badge off">OFF DUTY</span></header><section id="page-dashboard" class="page active"><section class="card status-card"><div class="status-row"><p id="clockLine" class="mono muted"></p><span id="gpsBadge" class="pill inactive">GPS inactivo</span></div><p id="gpsAddress" class="mono small muted"></p><p id="gpsAirport" class="mono small gold"></p><p class="gross-label">GANANCIA BRUTA HOY</p><p id="grossToday" class="gross-value">$0.00</p><p id="tripCountLabel" class="mono small muted">0 viajes</p><div class="shift-buttons"><button id="btnStart" class="shift-btn">INICIAR</button><button id="btnBreak" class="shift-btn" disabled>BREAK</button><button id="btnEnd" class="shift-btn" disabled>FINALIZAR</button></div></section><section class="grid2"><article class="stat-card"><span>$/HORA</span><strong id="perHour">$0.00</strong><small id="activeTime">sin turno</small></article><article class="stat-card"><span>META $500</span><strong id="goalPct">0%</strong><small id="goalRemaining">Faltan $500.00</small></article><article class="stat-card"><span>NETO HOY</span><strong id="netToday">$0.00</strong><small>bruto − comisión</small></article><article class="stat-card"><span>PEAJES HOY</span><strong id="tollsToday">$0.00</strong><small id="tollCount">0 cruces</small></article></section><div class="progress-track"><div id="goalBar" class="progress-fill"></div></div><section class="card insight-card"><p class="eyebrow">Estado del turno</p><p id="smartInsight" class="insight">Inicia un turno para activar GPS y rastrear rendimiento.</p></section><section class="card compact-card"><div class="entry-head"><h2>Resumen semanal</h2><span id="weekGross" class="money-small">$0.00</span></div><div class="summary-grid"><div><span>Viajes</span><b id="weekTrips">0</b></div><div><span>Peajes</span><b id="weekTolls">$0.00</b></div><div><span>Millas</span><b id="weekMiles">0.0</b></div></div></section></section><section id="page-entry" class="page"><section class="card entry-card"><div class="entry-head"><div><p class="eyebrow">Daily Entry</p><h2>Registro rápido de viaje</h2></div><button id="btnLocation" type="button" class="loc-btn">📍 Pickup GPS</button></div><div id="tollDetected" class="toll-flag hidden"></div><form id="tripForm" autocomplete="off"><label class="platform-label">Plataforma</label><div id="platformGrid" class="platform-grid"></div><input type="hidden" id="platform" value="Uber"><div class="quick-grid"><label>Tarifa<input id="fare" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" required></label><label>Propina<input id="tips" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"></label><label>Efectivo<input id="cash" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"></label><label>Extra<input id="extra" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"></label><label>Millas<input id="miles" type="number" inputmode="decimal" min="0" step="0.1" placeholder="0.0"></label><label>Comisión<input id="fee" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"></label><label>Peajes<input id="toll" type="number" inputmode="decimal" min="0" step="0.01" placeholder="Auto GPS / 0.00"></label><label>Reembolso peaje<input id="reimbursed" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"></label></div><div class="quick-grid"><label>Pickup<input id="pickup" type="text" placeholder="Origen"></label><label>Drop-off<input id="dropoff" type="text" placeholder="Destino"></label></div><label>Notas<input id="notes" type="text" placeholder="Notas del viaje; peajes detectados aparecen aquí"></label><div id="tripTollList" class="trip-toll-list"><span>Sin peajes detectados en este viaje.</span></div><div class="live-total"><span>Total neto del viaje</span><strong id="liveTotal">$0.00</strong></div><button type="submit" class="save-btn">GUARDAR VIAJE</button></form></section></section><section id="page-register" class="page"><section class="card"><div class="entry-head"><div><p class="eyebrow">Register</p><h2>Bitácora de viajes</h2></div><button id="btnClearToday" type="button" class="danger-btn">Borrar hoy</button></div><div id="tripList" class="trip-list"><p class="empty">Sin viajes registrados hoy.</p></div></section><section class="card tolls-card"><h2>Peajes 2026 · E-ZPass</h2><p class="mono small muted">Tarifas estándar para vehículo de pasajeros con tag. La app muestra la fuente y el desglose guardado para cada viaje.</p><div id="tollReference" class="toll-ref-grid"></div></section></section><section id="page-more" class="page"><section class="card"><p class="eyebrow">Próximamente</p><h2>Gastos y reportes</h2><p class="muted bodycopy">Estas páginas quedan reservadas para seguimiento de gasolina, mantenimiento, gastos y reportes semanales/mensuales. La bitácora, el dashboard y el registro diario ya están activos.</p></section><section class="card"><h2>Respaldo</h2><button id="btnExport" type="button" class="export-btn">⬇ Exportar respaldo (.json)</button><p class="mono small muted">Los datos se guardan localmente en este teléfono usando localStorage.</p></section></section></main><nav class="bottom-nav" aria-label="Navegación principal"><button class="nav-btn active" data-page="dashboard"><span>▦</span>Dashboard</button><button class="nav-btn" data-page="entry"><span>＋</span>Daily Entry</button><button class="nav-btn" data-page="register"><span>☷</span>Register</button><button class="nav-btn" data-page="more"><span>•••</span>Más</button></nav><script src="app.js"></script></body></html>
+  <main class="app-shell">
+    <header class="brand-bar">
+      <div class="brand-mark"><span></span><span></span><span></span></div>
+      <div class="brand-copy"><strong>ISLANDCITY</strong><small>TRANSIT SERVICES</small></div>
+      <div class="header-dot"></div>
+      <button class="avatar" aria-label="Profile">M</button>
+    </header>
+
+    <nav class="top-nav" aria-label="Main navigation">
+      <button class="top-link active" data-screen="entry">ENTRY</button>
+      <button class="top-link" data-screen="dashboard">DASHBOARD</button>
+      <button class="top-link" data-screen="register">REGISTRO</button>
+    </nav>
+
+    <section class="screen active" id="entry">
+      <div class="duty-card">
+        <div class="duty-line"></div>
+        <div class="duty-row"><span><b>SÁBADO</b><i>·</i> 22 de agosto de 2026</span><strong id="clock">9:07:34</strong><em>ON DUTY</em></div>
+        <p>📍 <b class="red">✕</b> GPS bloqueado - Activa permisos - Demo: <span>📍 JFK Cargo Plaza Rd · 40.6551,-73....</span></p>
+      </div>
+
+      <article class="card quick-card">
+        <div class="section-heading"><span></span><h2>QUICK DATA ENTRY</h2><small class="mint">● GPS TomTom OK</small></div>
+        <div class="money-grid">
+          <div class="money-box"><b>CASH REC ($)</b><strong>0.00</strong></div>
+          <div class="money-box"><b>EXTRA ($)</b><strong>0.00</strong></div>
+          <div class="money-box"><b>TIP ($)</b><strong>0.00</strong></div>
+        </div>
+      </article>
+
+      <article class="card platform-card">
+        <h3>PAYING PLATFORM: <span>Chrome Menu con logos originales pequeñitos</span></h3>
+        <button class="select-platform"><span class="crest">✦</span> Gallant <b>▼</b></button>
+      </article>
+
+      <article class="card ezpass-card">
+        <div><h3><span class="mint">●</span> E-ZPASS AUTO - TomTom Completa</h3><p>TomTom kf5pZV7...PEe83s OK - GPS funcional 1 línea</p></div>
+        <div class="toll"><small>TOLLS ($)</small><strong>$0.00</strong></div>
+      </article>
+
+      <article class="card trip-card">
+        <div class="trip-head"><div class="section-heading"><span></span><h2>TRIP LOCATIONS - GPS 1 línea TomTom</h2></div><button>Activar GPS</button></div>
+        <div class="location-row"><div><label>PICK UP</label><strong>Ej: West Granada Ave, Copiague, NY</strong><small class="red">✕ GPS error - usa entrada manual</small></div><div class="circle red-circle">✕</div></div>
+        <div class="divider"></div>
+        <div class="location-row"><div><label>DROP OFF</label><strong>Ej: Cargo Plaza Rd, JFK</strong><small>Vacío - usa GPS DROP - TomTom nombre comercial</small></div><div class="circle blue-circle">●<small>GPS<br>DROP</small></div></div>
+      </article>
+
+      <div class="stats-row">
+        <div><small>TIPS</small><strong>5.00</strong></div><div><small>OTHER</small><strong>0.00</strong></div><div><small>MILES</small><strong>12.5</strong></div><div><small>TOLL REIMB</small><strong class="gold">$0.00</strong></div>
+      </div>
+      <div class="fake-input">Ej: REF-1234 / Invoice # (opcional) - FUNCIONAL</div>
+    </section>
+
+    <section class="screen" id="dashboard">
+      <div class="dash-title"><div><h1>HOURLY EARNINGS<br>ADVISOR</h1></div><span>CURRENT HOURLY<br>RATE</span></div>
+      <article class="card gauge-card">
+        <div class="gauge-wrap">
+          <div class="gauge"></div><div class="needle"></div><div class="needle-cap"></div>
+          <div class="gauge-copy"><strong>$65.40</strong><small>/hr AHORA</small></div>
+        </div>
+        <div class="gauge-legend"><span class="danger">● $0–45</span><span class="orange">● $45–58</span><span class="yellow">● $58–68</span><span class="mint">● $68–80</span><span class="blue">● $80–90</span></div>
+      </article>
+      <article class="card target-card"><h2>TARGET VS. ACTUAL</h2><div class="metric-grid"><div><small>WEEKLY REG.</small><strong class="gold">$68/hr</strong><em>meta semanal</em></div><div><small>$/HR ACTUAL</small><strong class="mint">$65/hr</strong><em>este turno</em></div><div><small>LAST HOUR</small><strong class="blue">$71/hr</strong><em>12:00–1:00</em></div><div><small>TURNO ACTIVO</small><strong>3h 54m</strong></div><div><small>VIAJES</small><strong>6</strong></div><div><small>CLOCK IN</small><strong class="gold">9:30A</strong></div></div></article>
+      <article class="card history-card"><div class="history-head"><h2>PERFORMANCE<br>HISTORY</h2><span>Last 8 hours</span></div><div class="bars"><div><i class="bar goldbar"></i><small>9AM</small></div><div><i class="bar greenbar tall"></i><small>10A</small></div><div><i class="bar greenbar mid"></i><small>11A</small></div><div><i class="bar orangebar short"></i><small>12P</small></div><div><i class="bar bluebar tall"></i><small>1PM</small></div><div><i class="bar bluebar highest"></i><small>2PM</small></div><div><i class="bar greenbar mid"></i><small>3PM</small></div><div><i class="bar greenbar low"></i><small>NOW</small></div></div><div class="range"><span>$0</span><span>$90/hr</span></div></article>
+      <article class="advisor"><div class="bot">🤖</div><div><h2>Your performance is good!</h2><p>$65/hr está en la zona <b>GRAN.</b> Focus on high-demand zones or a slightly higher rate per mile to maintain target of $68–$70/hr. Avoid lower-paid jobs.</p><div class="advisor-tags"><span>Alta demanda →</span><span>Evitar tráfico</span><span>Meta: $70/hr</span></div></div></article>
+    </section>
+
+    <section class="screen" id="register">
+      <div class="register-head"><div><p>DAILY</p><h1>REGISTER</h1><small>Saturday · August 22, 2026</small></div><button class="filter">⌄ &nbsp; FILTER</button></div>
+      <article class="register-total"><div><small>TOTAL EARNINGS</small><strong>$405.50</strong></div><div><small>6 TRIPS</small><strong>72.5 mi</strong></div></article>
+      <div class="search">⌕ &nbsp; Search route, reference, platform...</div>
+      <div class="register-list">
+        <article class="transaction"><div class="transaction-top"><span class="platform-badge">✦</span><div><h3>Gallant</h3><small>9:30 AM · COMPLETED</small></div><strong>$72.50</strong><button>EDIT</button></div><div class="route"><span>West Granada Ave, Copiague, NY</span><i>↓</i><span>Cargo Plaza Rd, JFK</span></div><div class="transaction-foot"><span>12.5 mi</span><span>Tip $5.00</span><span>Toll $0.00</span><span>REF-1234</span></div></article>
+        <article class="transaction"><div class="transaction-top"><span class="platform-badge blue-badge">◈</span><div><h3>Blacklane</h3><small>11:10 AM · COMPLETED</small></div><strong>$58.00</strong><button>EDIT</button></div><div class="route"><span>Huntington Station, NY</span><i>↓</i><span>LaGuardia Airport</span></div><div class="transaction-foot"><span>18.2 mi</span><span>Tip $0.00</span><span>Toll $8.55</span><span>REF-1235</span></div></article>
+        <article class="transaction"><div class="transaction-top"><span class="platform-badge green-badge">●</span><div><h3>Private Client</h3><small>1:05 PM · COMPLETED</small></div><strong>$95.00</strong><button>EDIT</button></div><div class="route"><span>JFK Terminal 4</span><i>↓</i><span>Manhattan, NY</span></div><div class="transaction-foot"><span>21.4 mi</span><span>Tip $15.00</span><span>Toll $0.00</span><span>INV-842</span></div></article>
+      </div>
+    </section>
+
+    <nav class="bottom-nav">
+      <button class="active" data-screen="entry"><i>🚕</i><span>ENTRY</span></button>
+      <button data-screen="dashboard"><i>📊</i><span>DASH</span></button>
+      <button data-screen="register"><i>📋</i><span>REG</span></button>
+    </nav>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
