@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tip Tracker - Miguel</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        function App() {
+            const [history, setHistory] = useState([]);
+            const [restaurant, setRestaurant] = useState('');
+            const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+            const [cash, setCash] = useState('');
+            const [creditCard, setCreditCard] = useState('');
+            const [tip, setTip] = useState('');
+            const [ocrLoading, setOcrLoading] = useState(false);
+            const fileInputRef = useRef(null);
+
+            // Cargar del disco al abrir
+            useEffect(() => {
+                const saved = localStorage.getItem('tipHistory');
+                if (saved) setHistory(JSON.parse(saved));
+            }, []);
+
+            // Guardar en disco cada vez que cambia
+            useEffect(() => {
+                localStorage.setItem('tipHistory', JSON.stringify(history));
+            }, [history]);
+
+            const parseNumber = (val) => {
+                if (!val) return 0;
+                return parseFloat(val.toString().replace(/[^0-9.-]/g, '')) || 0;
+            };
+
+            const formatCurrency = (num) => {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD'
+                }).format(num || 0);
+            };
+
+            const handleImageUpload = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                setOcrLoading(true);
+                try {
+                    const { data: { text } } = await Tesseract.recognize(file, 'eng');
+
+                    // Buscar totales reales del recibo
+                    const patterns = [
+                        /(?:total|amount|balance)[\s:]*\$?\s*([\d,]+\.?\d{0,2})/i,
+                        /\$[\s]*([\d,]+\.?\d{2})/g
+                    ];
+
+                    let found = [];
+                    for (let pattern of patterns) {
+                        const matches = [...text.matchAll(pattern)];
+                        found = found.concat(matches.map(m => parseFloat(m[1].replace(/,/g, ''))));
+                    }
+
+                    // Tomar el número más grande encontrado, usualmente es el total
+                    if (found.length > 0) {
+                        const total = Math.max(...found.filter(n => n > 0 && n < 10000));
+                        setTip(total.toFixed(2));
+                        alert(`Total detectado: ${formatCurrency(total)}`);
+                    } else {
+                        alert('No se detectó total. Ingrésalo manual.');
+                    }
+                } catch (err) {
+                    alert('Error leyendo recibo. Ingresa manual.');
+                }
+                setOcrLoading(false);
+                e.target.value = '';
+            };
+
+            const handleSave = () => {
+                const entry = {
+                    id: Date.now(),
+                    restaurant: restaurant || 'Sin nombre',
+                    date,
+                    cash: parseNumber(cash),
+                    creditCard: parseNumber(creditCard),
+                    tip: parseNumber(tip),
+                    total: parseNumber(cash) + parseNumber(creditCard) + parseNumber(tip)
+                };
+
+                setHistory([entry,...history]);
+
+                // Auto-clear después de guardar
+                setRestaurant('');
+                setDate(new Date().toISOString().split('T')[0]);
+                setCash('');
+                setCreditCard('');
+                setTip('');
+
+                alert('Guardado en disco ✓');
+            };
+
+            const handleNewEntry = () => {
+                // Limpia pantalla pero NO borra historial
+                setRestaurant('');
+                setDate(new Date().toISOString().split('T')[0]);
+                setCash('');
+                setCreditCard('');
+                setTip('');
+            };
+
+            const handleDelete = (id) => {
+                if (confirm('¿Borrar este registro?')) {
+                    setHistory(history.filter(h => h.id!== id));
+                }
+            };
+
+            const totalTips = history.reduce((sum, h) => sum + h.tip, 0);
+            const totalSales = history.reduce((sum, h) => sum + h.total, 0);
+
+            const CalculatorInput = ({ value, onChange, placeholder }) => {
+                const [display, setDisplay] = useState(value);
+
+                useEffect(() => { setDisplay(value); }, [value]);
+
+                const handleButton = (val) => {
+                    if (val === 'C') {
+                        setDisplay('');
+                        onChange('');
+                    } else if (val === '+' || val === '-') {
+                        const current = parseNumber(display);
+                        setDisplay(current + val);
+                        onChange(current + val);
+                    } else if (val === '.') {
+                        if (!display.includes('.')) {
+                            setDisplay(display + '.');
+                            onChange(display + '.');
+                        }
+                    } else {
+                        const newVal = display + val;
+                        setDisplay(newVal);
+                        onChange(newVal);
+                    }
+                };
+
+                return (
+                    <div>
+                        <input
+                            type="text"
+                            value={display}
+                            onChange={(e) => { setDisplay(e.target.value); onChange(e.target.value); }}
+                            placeholder="$0.00"
+                            className="w-full text-3xl p-3 border-2 rounded-lg mb-2"
+                        />
+                        <div className="grid grid-cols-4 gap-2">
+                            {['7','8','9','C','4','5','6','+','1','2','3','-','0','.','=','='].map((btn, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => handleButton(btn)}
+                                    className={`p-4 text-xl font-bold rounded-lg ${
+                                        btn === 'C'? 'bg-red-500 text-white' :
+                                        btn === '+' || btn === '-'? 'bg-blue-500 text-white' :
+                                        'bg-gray-200'
+                                    }`}
+                                >
+                                    {btn}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                );
+            };
+
+            return (
+                <div className="min-h-screen bg-gray-100 p-4 pb-20">
+                    <div className="max-w-md mx-auto">
+                        <h1 className="text-3xl font-bold mb-6 text-center">Tip Tracker</h1>
+
+                        <div className="bg-white rounded-xl shadow-lg p-4 mb-4">
+                            <button
+                                onClick={handleNewEntry}
+                                className="w-full bg-purple-600 text-white py-3 rounded-lg font-bold mb-4"
+                            >
+                                + NEW ENTRY
+                            </button>
+
+                            <label className="block mb-3">
+                                <span className="text-gray-700 font-semibold">Restaurante</span>
+                                <input
+                                    type="text"
+                                    value={restaurant}
+                                    onChange={(e) => setRestaurant(e.target.value)}
+                                    placeholder="Nombre"
+                                    className="w-full p-3 border-2 rounded-lg mt-1"
+                                />
+                            </label>
+
+                            <label className="block mb-3">
+                                <span className="text-gray-700 font-semibold">Fecha</span>
+                                <input
+                                    type="date"
+                                    value={date}
+                                    onChange={(e) => setDate(e.target.value)}
+                                    className="w-full p-3 border-2 rounded-lg mt-1"
+                                />
+                            </label>
+
+                            <label className="block mb-3">
+                                <span className="text-gray-700 font-semibold">Cash</span>
+                                <CalculatorInput value={cash} onChange={setCash} />
+                            </label>
+
+                            <label className="block mb-3">
+                                <span className="text-gray-700 font-semibold">Credit Card</span>
+                                <CalculatorInput value={creditCard} onChange={setCreditCard} />
+                            </label>
+
+                            <label className="block mb-3">
+                                <span className="text-gray-700 font-semibold">Tip / Total</span>
+                                <CalculatorInput value={tip} onChange={setTip} />
+                            </label>
+
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleImageUpload}
+                                accept="image/*"
+                                className="hidden"
+                            />
+                            <button
+                                onClick={() => fileInputRef.current.click()}
+                                disabled={ocrLoading}
+                                className="w-full bg-green-600 text-white py-3 rounded-lg font-bold mb-3 disabled:bg-gray-400"
+                            >
+                                {ocrLoading? 'Leyendo recibo...' : '📷 SCAN RECEIPT'}
+                            </button>
+
+                            <button
+                                onClick={handleSave}
+                                className="w-full bg-blue-600 text-white py-4 rounded-lg font-bold text-xl"
+                            >
+                                GUARDAR
+                            </button>
+                        </div>
+
+                        <div className="bg-white rounded-xl shadow-lg p-4 mb-4">
+                            <h2 className="text-xl font-bold mb-2">Resumen</h2>
+                            <div className="flex justify-between text-lg">
+                                <span>Total Tips:</span>
+                                <span className="font-bold text-green-600">{formatCurrency(totalTips)}</span>
+                            </div>
+                            <div className="flex justify-between text-lg">
+                                <span>Total Ventas:</span>
+                                <span className="font-bold">{formatCurrency(totalSales)}</span>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-xl shadow-lg p-4">
+                            <h2 className="text-xl font-bold mb-3">Historial</h2>
+                            {history.length === 0? (
+                                <p className="text-gray-500 text-center py-4">No hay registros</p>
+                            ) : (
+                                history.map(entry => (
+                                    <div key={entry.id} className="border-b py-3 last:border-0">
+                                        <div className="flex justify-between items-start mb-1">
+                                            <div>
+                                                <p className="font-bold">{entry.restaurant}</p>
+                                                <p className="text-sm text-gray-600">{entry.date}</p>
+                                            </div>
+                                            <button
+                                                onClick={() => handleDelete(entry.id)}
+                                                className="text-red-500 font-bold"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                        <div className="text-sm text-gray-700">
+                                            <p>Cash: {formatCurrency(entry.cash)}</p>
+                                            <p>Card: {formatCurrency(entry.creditCard)}</p>
+                                            <p className="font-bold">Tip: {formatCurrency(entry.tip)}</p>
+                                            <p className="font-bold text-lg">Total: {formatCurrency(entry.total)}</p>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
